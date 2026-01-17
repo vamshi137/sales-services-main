@@ -1,0 +1,380 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SSSMS Design System - Enterprise HRMS
+   Inspired by Druvo HRM - Purple/Magenta gradient theme
+   Modern, Clean, Professional
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap');
+
+@layer base {
+  :root {
+    /* Core palette - Purple/Magenta theme like Druvo */
+    --background: 270 20% 98%;
+    --foreground: 270 50% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 270 50% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 50% 11%;
+
+    /* Primary - Deep Purple */
+    --primary: 280 65% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light Purple */
+    --secondary: 280 30% 95%;
+    --secondary-foreground: 280 65% 35%;
+
+    /* Muted - Light Gray with purple tint */
+    --muted: 270 20% 96%;
+    --muted-foreground: 270 10% 45%;
+
+    /* Accent - Magenta/Pink */
+    --accent: 320 80% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Success - Emerald */
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+
+    /* Warning - Amber */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 0%;
+
+    /* Destructive - Rose */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Info - Blue */
+    --info: 210 100% 50%;
+    --info-foreground: 0 0% 100%;
+
+    --border: 270 20% 90%;
+    --input: 270 20% 90%;
+    --ring: 280 65% 35%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar - White/Light with purple accents */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 270 50% 25%;
+    --sidebar-primary: 280 65% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 280 30% 95%;
+    --sidebar-accent-foreground: 280 65% 35%;
+    --sidebar-border: 270 20% 92%;
+    --sidebar-ring: 280 65% 35%;
+    --sidebar-muted: 270 10% 55%;
+
+    /* Chart colors - Purple/Pink gradient palette */
+    --chart-1: 280 65% 35%;
+    --chart-2: 320 80% 50%;
+    --chart-3: 160 84% 39%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 210 100% 50%;
+
+    /* Custom gradient colors */
+    --gradient-start: 280 65% 35%;
+    --gradient-end: 320 80% 50%;
+
+    /* Shadows */
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-card: 0 2px 8px -2px rgb(0 0 0 / 0.08);
+    --shadow-purple: 0 4px 14px -3px hsl(280 65% 35% / 0.25);
+  }
+
+  .dark {
+    --background: 270 30% 8%;
+    --foreground: 270 10% 95%;
+
+    --card: 270 30% 12%;
+    --card-foreground: 270 10% 95%;
+
+    --popover: 270 30% 12%;
+    --popover-foreground: 270 10% 95%;
+
+    --primary: 280 65% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 270 30% 18%;
+    --secondary-foreground: 270 10% 95%;
+
+    --muted: 270 30% 15%;
+    --muted-foreground: 270 15% 60%;
+
+    --accent: 320 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 30% 20%;
+    --input: 270 30% 20%;
+    --ring: 280 65% 55%;
+
+    --sidebar-background: 270 30% 10%;
+    --sidebar-foreground: 270 10% 80%;
+    --sidebar-primary: 280 65% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 270 30% 18%;
+    --sidebar-accent-foreground: 270 10% 95%;
+    --sidebar-border: 270 30% 18%;
+    --sidebar-ring: 280 65% 55%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-primary/50;
+  }
+}
+
+@layer components {
+  /* Gradient backgrounds */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, hsl(280 65% 35%) 0%, hsl(320 80% 50%) 100%);
+  }
+
+  .bg-gradient-primary-light {
+    background: linear-gradient(135deg, hsl(280 65% 35% / 0.1) 0%, hsl(320 80% 50% / 0.1) 100%);
+  }
+
+  .bg-gradient-purple-pink {
+    background: linear-gradient(135deg, hsl(280 65% 45%) 0%, hsl(320 80% 55%) 100%);
+  }
+
+  .text-gradient-primary {
+    background: linear-gradient(135deg, hsl(280 65% 35%) 0%, hsl(320 80% 50%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Card with hover effect */
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  /* Stat card styling */
+  .stat-card {
+    @apply bg-card rounded-2xl p-6 border border-border shadow-sm card-hover relative overflow-hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, hsl(280 65% 35%) 0%, hsl(320 80% 50%) 100%);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .stat-card:hover::before {
+    opacity: 1;
+  }
+
+  /* Sidebar item active state */
+  .sidebar-item-active {
+    @apply bg-gradient-primary text-white font-medium shadow-md;
+  }
+
+  /* Data table styling */
+  .data-table {
+    @apply w-full text-sm;
+  }
+
+  .data-table th {
+    @apply px-4 py-3 text-left font-semibold text-muted-foreground bg-muted/50 border-b;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 border-b border-border;
+  }
+
+  .data-table tr:hover td {
+    @apply bg-primary/5;
+  }
+
+  /* Status badges */
+  .badge-success {
+    @apply bg-success/10 text-success border-success/20;
+  }
+
+  .badge-warning {
+    @apply bg-warning/10 text-warning border-warning/20;
+  }
+
+  .badge-destructive {
+    @apply bg-destructive/10 text-destructive border-destructive/20;
+  }
+
+  .badge-info {
+    @apply bg-info/10 text-info border-info/20;
+  }
+
+  .badge-primary {
+    @apply bg-primary/10 text-primary border-primary/20;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply mb-8;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-foreground;
+  }
+
+  .page-description {
+    @apply text-muted-foreground mt-1;
+  }
+
+  /* Form sections */
+  .form-section {
+    @apply bg-card rounded-2xl p-6 border border-border shadow-sm;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold mb-4 pb-2 border-b border-border;
+  }
+
+  /* Hexagon decorations like Druvo */
+  .hexagon-decoration {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border: 2px solid hsl(280 65% 35% / 0.15);
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  }
+
+  /* Purple glow effect */
+  .glow-purple {
+    box-shadow: 0 0 20px hsl(280 65% 35% / 0.3);
+  }
+
+  /* Circular progress indicator */
+  .progress-ring {
+    @apply relative inline-flex items-center justify-center;
+  }
+
+  /* Quick action button */
+  .quick-action-btn {
+    @apply flex flex-col items-center gap-3 p-5 rounded-2xl border border-border bg-card;
+  @apply hover:bg-primary/5 hover:border-primary/30 hover:shadow-lg;
+  @apply transition-all duration-300 cursor-pointer;
+  }
+
+  .quick-action-btn:hover .quick-action-icon {
+    @apply scale-110;
+    background: linear-gradient(135deg, hsl(280 65% 35%) 0%, hsl(320 80% 50%) 100%);
+  }
+
+  .quick-action-icon {
+    @apply p-3 rounded-xl transition-all duration-300;
+  }
+
+  /* Animation classes */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out;
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
