@@ -5,6 +5,26 @@ import { getToken, getRefreshToken, updateToken, clearAuth } from './auth';
 const BASE_URL = import.meta.env.VITE_API_URL || 'https://hrms1.free.nf';
 const API_BASE_URL = `${BASE_URL}/api`;
 
+/**
+ * Build API URL with InfinityFree bypass parameter
+ * Appends ?i=1 to bypass InfinityFree anti-bot protection
+ * 
+ * @param path - API endpoint path (e.g., '/login.php' or '/employees.php?id=123')
+ * @returns Full URL with ?i=1 or &i=1 appended
+ */
+export const buildApiUrl = (path: string): string => {
+  // Remove leading slash if present to avoid double slashes
+  const cleanPath = path.startsWith('/') ? path.substring(1) : path;
+  const fullUrl = `${API_BASE_URL}/${cleanPath}`;
+  
+  // Check if URL already has query parameters
+  const hasQueryParams = fullUrl.includes('?');
+  const separator = hasQueryParams ? '&' : '?';
+  
+  // Append i=1 parameter (InfinityFree bypass)
+  return `${fullUrl}${separator}i=1`;
+};
+
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -14,8 +34,9 @@ const api: AxiosInstance = axios.create({
   timeout: 30000,
 });
 
-// Request interceptor to add JWT token
+// Request interceptor to add JWT token and InfinityFree bypass parameter
 // CRITICAL: InfinityFree blocks Authorization header, so we use X-Auth-Token
+// CRITICAL: InfinityFree requires ?i=1 to bypass anti-bot protection
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getToken();
@@ -25,6 +46,14 @@ api.interceptors.request.use(
       // Fallback: Authorization header for future hosting migration
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    
+    // Add InfinityFree bypass parameter ?i=1 to all requests
+    if (config.url) {
+      const hasQueryParams = config.url.includes('?');
+      const separator = hasQueryParams ? '&' : '?';
+      config.url = `${config.url}${separator}i=1`;
+    }
+    
     return config;
   },
   (error: AxiosError) => {
@@ -45,8 +74,8 @@ api.interceptors.response.use(
       try {
         const refreshToken = getRefreshToken();
         if (refreshToken) {
-          // Call refresh endpoint without auth headers
-          const response = await axios.post(`${API_BASE_URL}/refresh.php`, {
+          // Call refresh endpoint without auth headers (with InfinityFree bypass)
+          const response = await axios.post(buildApiUrl('/refresh.php'), {
             refreshToken,
           });
 
