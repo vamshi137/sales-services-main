@@ -37,7 +37,7 @@ import { Separator } from '@/components/ui/separator';
 // 🔹 MOCK: logged-in employee
 const loggedInEmployeeId = 'SSSPL001';
 
-// Mock payroll data (same as before)
+// Mock payroll data for now - can be integrated with backend later
 const payrollData = [
   {
     id: '1',

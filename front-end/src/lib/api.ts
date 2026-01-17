@@ -1,7 +1,9 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { getToken, getRefreshToken, updateToken, clearAuth } from './auth';
 
-// Configure your PHP backend URL here
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://your-domain.com/api';
+// Configure PHP backend URL from environment variables
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://hrms1.free.nf';
+const API_BASE_URL = `${BASE_URL}/api`;
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
@@ -13,11 +15,15 @@ const api: AxiosInstance = axios.create({
 });
 
 // Request interceptor to add JWT token
+// CRITICAL: InfinityFree blocks Authorization header, so we use X-Auth-Token
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = localStorage.getItem('token');
+    const token = getToken();
     if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // Primary: X-Auth-Token for InfinityFree compatibility
+      config.headers['X-Auth-Token'] = token;
+      // Fallback: Authorization header for future hosting migration
+      config.headers['Authorization'] = `Bearer ${token}`;
     }
     return config;
   },
@@ -37,25 +43,28 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = getRefreshToken();
         if (refreshToken) {
+          // Call refresh endpoint without auth headers
           const response = await axios.post(`${API_BASE_URL}/refresh.php`, {
             refreshToken,
           });
 
           const { token } = response.data;
-          localStorage.setItem('token', token);
+          
+          // Update token in storage
+          updateToken(token);
 
+          // Retry original request with new token
           if (originalRequest.headers) {
-            originalRequest.headers.Authorization = `Bearer ${token}`;
+            originalRequest.headers['X-Auth-Token'] = token;
+            originalRequest.headers['Authorization'] = `Bearer ${token}`;
           }
           return api(originalRequest);
         }
       } catch (refreshError) {
-        // Clear tokens and redirect to login
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+        // Refresh failed - clear auth and redirect to login
+        clearAuth();
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Building2, Lock, Mail, Users } from 'lucide-react';
+import { Eye, EyeOff, Building2, Lock, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-
-const DEMO_CREDENTIALS = [
-  { email: 'admin@ssspl.com', password: 'admin123', role: 'Admin', color: 'bg-red-500' },
-  { email: 'hr@ssspl.com', password: 'hr123', role: 'HR', color: 'bg-purple-500' },
-  { email: 'manager@ssspl.com', password: 'manager123', role: 'Manager', color: 'bg-blue-500' },
-  { email: 'employee@ssspl.com', password: 'employee123', role: 'Employee', color: 'bg-green-500' },
-  { email: 'accounts@ssspl.com', password: 'accounts123', role: 'Accounts', color: 'bg-amber-500' },
-];
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -23,7 +14,7 @@ const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isDemoMode } = useAuth();
+  const { login } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,19 +29,15 @@ const Login: React.FC = () => {
       });
       navigate('/dashboard');
     } catch (error: any) {
+      const errorMessage = error?.response?.data?.message || error?.message || 'Invalid credentials. Please try again.';
       toast({
         title: 'Login failed',
-        description: error.message || error.response?.data?.message || 'Invalid credentials. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleDemoLogin = (demoEmail: string, demoPassword: string) => {
-    setEmail(demoEmail);
-    setPassword(demoPassword);
   };
 
   return (
@@ -192,49 +179,6 @@ const Login: React.FC = () => {
                   )}
                 </Button>
               </form>
-
-              {/* Demo Mode Credentials */}
-              {isDemoMode && (
-                <div className="mt-6 p-4 bg-muted/50 rounded-lg border border-dashed">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Users className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">Demo Accounts</span>
-                    <Badge variant="secondary" className="text-xs">Dev Mode</Badge>
-                  </div>
-                  <div className="space-y-2">
-                    {DEMO_CREDENTIALS.map((cred) => {
-  const isEmployee = cred.role === 'Employee';
-
-  return (
-    <button
-      key={cred.email}
-      type="button"
-      disabled={!isEmployee}
-      onClick={() =>
-        isEmployee && handleDemoLogin(cred.email, cred.password)
-      }
-      className={`w-full flex items-center justify-between p-2 text-left text-sm rounded-md transition-colors border
-        ${
-          isEmployee
-            ? 'hover:bg-background hover:border-border'
-            : 'opacity-50 cursor-not-allowed'
-        }`}
-    >
-      <div className="flex items-center gap-2">
-        <div className={`w-2 h-2 rounded-full ${cred.color}`} />
-        <span className="font-medium">{cred.role}</span>
-      </div>
-      <span className="text-muted-foreground text-xs">{cred.email}</span>
-    </button>
-  );
-})}
-
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-3">
-                    Click any account to auto-fill credentials
-                  </p>
-                </div>
-              )}
 
               <div className="mt-6 text-center text-sm text-muted-foreground">
                 Don't have an account?{' '}

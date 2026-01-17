@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -14,6 +14,8 @@ import {
   Building2,
   ChevronLeft,
   ChevronRight,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,162 +45,15 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Employee } from '@/lib/api';
-
-// Mock data - In production, this comes from PHP API via employeeAPI.getAll()
-const mockEmployees: Employee[] = [
-  {
-    id: '1',
-    employeeId: 'SSSPL001',
-    fullName: 'Rajesh Kumar Singh',
-    email: 'rajesh.singh@ssspl.com',
-    phone: '+91 98765 43210',
-    gender: 'Male',
-    dateOfBirth: '1985-06-15',
-    bloodGroup: 'O+',
-    maritalStatus: 'Married',
-    presentAddress: 'Flat 302, Lumbini Towers, Somajiguda, Hyderabad',
-    permanentAddress: 'Vijayawada, Andhra Pradesh',
-    emergencyContact: '+91 87654 32109',
-    aadhaarNumber: '1234 5678 9012',
-    panNumber: 'ABCDE1234F',
-    uanNumber: '100123456789',
-    esicNumber: 'ESI0012345',
-    dateOfJoining: '2018-04-10',
-    employmentType: 'Permanent',
-    department: 'Engineering',
-    designation: 'Senior Engineer',
-    grade: 'L5',
-    reportingManager: 'Suresh Reddy',
-    workLocation: 'Hyderabad',
-    shiftType: 'General',
-    probationPeriod: '6 months',
-    confirmationDate: '2018-10-10',
-    status: 'active',
-  },
-  {
-    id: '2',
-    employeeId: 'SSSPL002',
-    fullName: 'Priya Sharma',
-    email: 'priya.sharma@ssspl.com',
-    phone: '+91 98765 43211',
-    gender: 'Female',
-    dateOfBirth: '1990-03-22',
-    bloodGroup: 'B+',
-    maritalStatus: 'Single',
-    presentAddress: 'Gachibowli, Hyderabad',
-    permanentAddress: 'Delhi',
-    emergencyContact: '+91 87654 32110',
-    aadhaarNumber: '2345 6789 0123',
-    panNumber: 'BCDEF2345G',
-    uanNumber: '100234567890',
-    esicNumber: 'ESI0023456',
-    dateOfJoining: '2020-01-15',
-    employmentType: 'Permanent',
-    department: 'Sales',
-    designation: 'Sales Manager',
-    grade: 'L4',
-    reportingManager: 'Amit Patel',
-    workLocation: 'Hyderabad',
-    shiftType: 'General',
-    probationPeriod: '3 months',
-    confirmationDate: '2020-04-15',
-    status: 'active',
-  },
-  {
-    id: '3',
-    employeeId: 'SSSPL003',
-    fullName: 'Amit Patel',
-    email: 'amit.patel@ssspl.com',
-    phone: '+91 98765 43212',
-    gender: 'Male',
-    dateOfBirth: '1982-11-08',
-    bloodGroup: 'A+',
-    maritalStatus: 'Married',
-    presentAddress: 'Banjara Hills, Hyderabad',
-    permanentAddress: 'Mumbai',
-    emergencyContact: '+91 87654 32111',
-    aadhaarNumber: '3456 7890 1234',
-    panNumber: 'CDEFG3456H',
-    uanNumber: '100345678901',
-    esicNumber: 'ESI0034567',
-    dateOfJoining: '2015-08-20',
-    employmentType: 'Permanent',
-    department: 'Sales',
-    designation: 'Regional Head',
-    grade: 'L6',
-    reportingManager: 'Director',
-    workLocation: 'Hyderabad',
-    shiftType: 'General',
-    probationPeriod: '6 months',
-    confirmationDate: '2016-02-20',
-    status: 'active',
-  },
-  {
-    id: '4',
-    employeeId: 'SSSPL004',
-    fullName: 'Sneha Reddy',
-    email: 'sneha.reddy@ssspl.com',
-    phone: '+91 98765 43213',
-    gender: 'Female',
-    dateOfBirth: '1992-07-30',
-    bloodGroup: 'AB+',
-    maritalStatus: 'Married',
-    presentAddress: 'Madhapur, Hyderabad',
-    permanentAddress: 'Bangalore',
-    emergencyContact: '+91 87654 32112',
-    aadhaarNumber: '4567 8901 2345',
-    panNumber: 'DEFGH4567I',
-    uanNumber: '100456789012',
-    esicNumber: 'ESI0045678',
-    dateOfJoining: '2021-06-01',
-    employmentType: 'Permanent',
-    department: 'HR',
-    designation: 'HR Executive',
-    grade: 'L3',
-    reportingManager: 'HR Manager',
-    workLocation: 'Hyderabad',
-    shiftType: 'General',
-    probationPeriod: '3 months',
-    confirmationDate: '2021-09-01',
-    status: 'on-leave',
-  },
-  {
-    id: '5',
-    employeeId: 'SSSPL005',
-    fullName: 'Vikram Joshi',
-    email: 'vikram.joshi@ssspl.com',
-    phone: '+91 98765 43214',
-    gender: 'Male',
-    dateOfBirth: '1988-12-05',
-    bloodGroup: 'O-',
-    maritalStatus: 'Single',
-    presentAddress: 'HITEC City, Hyderabad',
-    permanentAddress: 'Pune',
-    emergencyContact: '+91 87654 32113',
-    aadhaarNumber: '5678 9012 3456',
-    panNumber: 'EFGHI5678J',
-    uanNumber: '100567890123',
-    esicNumber: 'ESI0056789',
-    dateOfJoining: '2019-03-11',
-    employmentType: 'Contract',
-    department: 'Operations',
-    designation: 'Service Engineer',
-    grade: 'L2',
-    reportingManager: 'Rajesh Kumar Singh',
-    workLocation: 'Field',
-    shiftType: 'Rotational',
-    probationPeriod: 'N/A',
-    confirmationDate: 'N/A',
-    status: 'active',
-  },
-];
+import { Employee, employeeAPI } from '@/lib/api';
 
 const departments = ['All', 'Engineering', 'Sales', 'Operations', 'HR', 'Finance', 'Admin'];
 const statuses = ['All', 'Active', 'On Leave', 'Inactive', 'Terminated'];
 
 const Employees: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>(mockEmployees);
+  const [employees, setEmployees] = useState<Employee[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [departmentFilter, setDepartmentFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
@@ -206,6 +61,30 @@ const Employees: React.FC = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const { toast } = useToast();
+
+  // Fetch employees from backend
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const response = await employeeAPI.getAll();
+        setEmployees(response.data.employees || response.data || []);
+      } catch (err: any) {
+        const errorMessage = err?.response?.data?.message || 'Failed to load employees';
+        setError(errorMessage);
+        toast({
+          title: 'Error',
+          description: errorMessage,
+          variant: 'destructive',
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, [toast]);
 
   // Filter employees
   const filteredEmployees = employees.filter((emp) => {
@@ -432,7 +311,7 @@ const Employees: React.FC = () => {
                   <div>
                     {selectedEmployee.fullName}
                     <p className="text-sm font-normal text-muted-foreground">
-                      {selectedEmployee.employeeId} • {selectedEmployee.designation}
+                      {selectedEmployee.employeeId} â€¢ {selectedEmployee.designation}
                     </p>
                   </div>
                 </DialogTitle>
