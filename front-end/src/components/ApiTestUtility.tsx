@@ -29,7 +29,13 @@ const ApiTestUtility: React.FC = () => {
     // Get the API base URL being used
     const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://hrms1.free.nf/api';
     setApiBaseUrl(baseUrl);
-    console.log('🔧 API Test Utility initialized with baseURL:', baseUrl);
+    
+    // Comprehensive logging
+    console.log('🔧 API Test Utility - Environment Check:');
+    console.log('  VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
+    console.log('  Resolved baseUrl:', baseUrl);
+    console.log('  Is absolute?', baseUrl.startsWith('http'));
+    console.log('  All import.meta.env:', import.meta.env);
   }, []);
 
   const addResult = (result: TestResult) => {
@@ -88,6 +94,10 @@ const ApiTestUtility: React.FC = () => {
 
   const testLogin = async () => {
     addResult({ name: 'Login Test', status: 'running', message: 'Testing login endpoint...' });
+    
+    // Log what we're about to test
+    console.log('🧪 Login Test Starting...');
+    console.log('  Using authAPI.login from @/lib/api');
     
     try {
       // Use demo credentials - replace with actual test credentials

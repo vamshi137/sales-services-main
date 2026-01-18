@@ -6,14 +6,13 @@ import { getToken, getRefreshToken, updateToken, clearAuth } from './auth';
 // Fallback ensures it always works even if env var is missing
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hrms1.free.nf/api';
 
-// Development logging - helps debug configuration issues
-if (import.meta.env.DEV) {
-  console.log('🔧 API Configuration:');
-  console.log('  Environment:', import.meta.env.MODE);
-  console.log('  VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-  console.log('  Final API_BASE_URL:', API_BASE_URL);
-  console.log('  Note: All requests will include ?i=1 parameter');
-}
+// ALWAYS log API configuration (even in production) for debugging
+console.log('🔧 API Configuration:');
+console.log('  Environment:', import.meta.env.MODE);
+console.log('  VITE_API_BASE_URL from env:', import.meta.env.VITE_API_BASE_URL);
+console.log('  Final API_BASE_URL:', API_BASE_URL);
+console.log('  Is absolute URL?', API_BASE_URL.startsWith('http'));
+console.log('  Note: All requests will include ?i=1 parameter');
 
 /**
  * Build API URL with InfinityFree bypass parameter
@@ -45,13 +44,11 @@ const api: AxiosInstance = axios.create({
   timeout: 30000,
 });
 
-// Log axios configuration in development
-if (import.meta.env.DEV) {
-  console.log('📡 Axios Instance Created:');
-  console.log('  baseURL:', api.defaults.baseURL);
-  console.log('  timeout:', api.defaults.timeout);
-  console.log('  headers:', api.defaults.headers);
-}
+// ALWAYS log axios configuration for debugging
+console.log('📡 Axios Instance Created:');
+console.log('  baseURL:', api.defaults.baseURL);
+console.log('  timeout:', api.defaults.timeout);
+console.log('  Default headers:', JSON.stringify(api.defaults.headers, null, 2));
 
 // Request interceptor to add JWT token and InfinityFree bypass parameter
 // CRITICAL: InfinityFree blocks Authorization: Bearer header, so we use X-Auth-Token ONLY
@@ -75,18 +72,19 @@ api.interceptors.request.use(
       config.url = `${config.url}${separator}i=1`;
     }
     
-    // Development logging - log every request
-    if (import.meta.env.DEV) {
-      const fullUrl = config.url?.startsWith('http') 
-        ? config.url 
-        : `${config.baseURL}${config.url}`;
-      console.log(`📤 API Request [${config.method?.toUpperCase()}]:`, fullUrl);
-      console.log('  Headers:', {
-        'Content-Type': config.headers['Content-Type'],
-        'X-Auth-Token': config.headers['X-Auth-Token'] ? '✓ Present' : '✗ Missing',
-        'Authorization': config.headers['Authorization'] ? '⚠️ PRESENT (SHOULD NOT BE)' : '✓ Not present',
-      });
-    }
+    // ALWAYS log every request for debugging (even in production)
+    const fullUrl = config.url?.startsWith('http') 
+      ? config.url 
+      : `${config.baseURL}${config.url}`;
+    console.log(`📤 API Request [${config.method?.toUpperCase()}]:`, fullUrl);
+    console.log('  Config URL:', config.url);
+    console.log('  Config baseURL:', config.baseURL);
+    console.log('  Full URL:', fullUrl);
+    console.log('  Headers:', {
+      'Content-Type': config.headers['Content-Type'],
+      'X-Auth-Token': config.headers['X-Auth-Token'] ? '✓ Present' : '✗ Missing',
+      'Authorization': config.headers['Authorization'] ? '⚠️ PRESENT (SHOULD NOT BE)' : '✓ Not present',
+    });
     
     return config;
   },
