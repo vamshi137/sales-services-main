@@ -35,16 +35,18 @@ const api: AxiosInstance = axios.create({
 });
 
 // Request interceptor to add JWT token and InfinityFree bypass parameter
-// CRITICAL: InfinityFree blocks Authorization header, so we use X-Auth-Token
+// CRITICAL: InfinityFree blocks Authorization: Bearer header, so we use X-Auth-Token ONLY
 // CRITICAL: InfinityFree requires ?i=1 to bypass anti-bot protection
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = getToken();
     if (token && config.headers) {
-      // Primary: X-Auth-Token for InfinityFree compatibility
+      // ONLY use X-Auth-Token for InfinityFree compatibility
+      // DO NOT send Authorization: Bearer - InfinityFree blocks it and returns HTML
       config.headers['X-Auth-Token'] = token;
-      // Fallback: Authorization header for future hosting migration
-      config.headers['Authorization'] = `Bearer ${token}`;
+      
+      // Remove Authorization header if it exists
+      delete config.headers['Authorization'];
     }
     
     // Add InfinityFree bypass parameter ?i=1 to all requests
@@ -84,10 +86,11 @@ api.interceptors.response.use(
           // Update token in storage
           updateToken(token);
 
-          // Retry original request with new token
+          // Retry original request with new token (X-Auth-Token only)
           if (originalRequest.headers) {
             originalRequest.headers['X-Auth-Token'] = token;
-            originalRequest.headers['Authorization'] = `Bearer ${token}`;
+            // Remove Authorization header - InfinityFree blocks it
+            delete originalRequest.headers['Authorization'];
           }
           return api(originalRequest);
         }

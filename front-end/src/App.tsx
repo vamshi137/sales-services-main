@@ -22,6 +22,7 @@ import Grievance from "./employee/Grievance";
 import Settings from "./employee/Settings";
 import Profile from "./employee/Profile";
 import Help from "./components/Help";
+import ApiTestUtility from "./components/ApiTestUtility";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/api-test" element={<ApiTestUtility />} />
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             {/* Protected routes - require authentication */}
             <Route element={<ProtectedRoute />}>

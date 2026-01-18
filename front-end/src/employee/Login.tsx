@@ -29,9 +29,38 @@ const Login: React.FC = () => {
       });
       navigate('/dashboard');
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || 'Invalid credentials. Please try again.';
+      // Enhanced error handling for InfinityFree CORS and network issues
+      let errorTitle = 'Login failed';
+      let errorMessage = 'Invalid credentials. Please try again.';
+      
+      if (error?.message === 'Network Error') {
+        errorTitle = 'Network Error';
+        errorMessage = 'Cannot connect to server. Check CORS configuration or network connection.';
+      } else if (error?.response?.status === 0) {
+        errorTitle = 'CORS Error';
+        errorMessage = 'Server returned HTML instead of JSON. Check if ?i=1 parameter is being sent.';
+      } else if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      // Log detailed error for debugging
+      console.error('Login Error Details:', {
+        message: error?.message,
+        status: error?.response?.status,
+        statusText: error?.response?.statusText,
+        data: error?.response?.data,
+        headers: error?.response?.headers,
+        config: {
+          url: error?.config?.url,
+          method: error?.config?.method,
+          headers: error?.config?.headers,
+        },
+      });
+      
       toast({
-        title: 'Login failed',
+        title: errorTitle,
         description: errorMessage,
         variant: 'destructive',
       });
