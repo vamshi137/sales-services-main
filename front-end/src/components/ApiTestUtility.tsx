@@ -4,7 +4,7 @@
  * Tests CORS, authentication, and endpoint responses
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -23,6 +23,14 @@ interface TestResult {
 const ApiTestUtility: React.FC = () => {
   const [results, setResults] = useState<TestResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [apiBaseUrl, setApiBaseUrl] = useState<string>('');
+
+  useEffect(() => {
+    // Get the API base URL being used
+    const baseUrl = import.meta.env.VITE_API_BASE_URL || 'https://hrms1.free.nf/api';
+    setApiBaseUrl(baseUrl);
+    console.log('🔧 API Test Utility initialized with baseURL:', baseUrl);
+  }, []);
 
   const addResult = (result: TestResult) => {
     setResults((prev) => {
@@ -37,8 +45,14 @@ const ApiTestUtility: React.FC = () => {
   const testCorsLive = async () => {
     addResult({ name: 'CORS Test', status: 'running', message: 'Testing CORS with test_cors_live.php...' });
     
+    // Get API base URL from environment or use fallback
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hrms1.free.nf/api';
+    const testUrl = `${API_BASE_URL}/test_cors_live.php?i=1`;
+    
     try {
-      const response = await fetch('https://hrms1.free.nf/api/test_cors_live.php?i=1', {
+      console.log('🧪 CORS Test URL:', testUrl);
+      
+      const response = await fetch(testUrl, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -267,15 +281,26 @@ const ApiTestUtility: React.FC = () => {
             </Button>
           </div>
 
-          {/* Current Token Status */}
+          {/* API Configuration Status */}
           <Alert>
             <AlertDescription>
-              <strong>Current Token:</strong>{' '}
-              {getToken() ? (
-                <span className="text-green-600">✓ Found ({getToken()?.substring(0, 20)}...)</span>
-              ) : (
-                <span className="text-red-600">✗ Not found (login required)</span>
-              )}
+              <div className="space-y-1">
+                <div>
+                  <strong>API Base URL:</strong>{' '}
+                  <code className="text-xs bg-slate-100 px-2 py-1 rounded">{apiBaseUrl}</code>
+                </div>
+                <div>
+                  <strong>Current Token:</strong>{' '}
+                  {getToken() ? (
+                    <span className="text-green-600">✓ Found ({getToken()?.substring(0, 20)}...)</span>
+                  ) : (
+                    <span className="text-red-600">✗ Not found (login required)</span>
+                  )}
+                </div>
+                <div className="text-xs text-muted-foreground mt-2">
+                  All requests automatically append <code className="bg-slate-100 px-1">?i=1</code> parameter
+                </div>
+              </div>
             </AlertDescription>
           </Alert>
 
